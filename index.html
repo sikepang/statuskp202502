@@ -28,13 +28,15 @@
 
     form {
       margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
     }
 
     input[type="text"] {
-      width: 70%;
+      width: 60%;
       max-width: 300px;
       padding: 10px;
-      margin: 10px 0;
       border: 1px solid #ddd;
       border-radius: 5px;
       font-size: 0.9rem;
@@ -52,6 +54,14 @@
 
     button:hover {
       background-color: #0056b3;
+    }
+
+    .reset-button {
+      background-color: #6c757d;
+    }
+
+    .reset-button:hover {
+      background-color: #5a6268;
     }
 
     .result-table {
@@ -87,17 +97,29 @@
       background-color: #e9ecef;
     }
 
+    .loading {
+      font-size: 1rem;
+      color: #555;
+      margin-top: 20px;
+    }
+
+    footer {
+      margin-top: 30px;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
     @media screen and (max-width: 600px) {
       h2 {
         font-size: 1.2rem;
       }
 
       input[type="text"] {
-        width: 90%;
+        width: 70%;
       }
 
       button {
-        width: 90%;
+        width: 40%;
         padding: 10px;
       }
 
@@ -112,24 +134,37 @@
   <h3>Periode 1 Februari 2025</h3>
   <form id="nipForm">
     <input type="text" id="nip" placeholder="Tulis NIP tanpa spasi!" maxlength="18" pattern="\d{18}" required>
-    <br>
     <button type="submit">Cari</button>
+    <button type="button" class="reset-button" id="resetButton">Reset</button>
   </form>
+  <div id="loading" class="loading" style="display: none;">Memuat data...</div>
   <div id="result"></div>
+
+  <footer>
+    By: BKPSDM Balangan
+  </footer>
 
   <script>
     document.getElementById("nipForm").onsubmit = function(e) {
       e.preventDefault();
-      const nip = document.getElementById("nip").value.trim();
+      const nipInput = document.getElementById("nip");
+      const nip = nipInput.value.trim();
+      const loadingDiv = document.getElementById("loading");
+      const resultDiv = document.getElementById("result");
+
       if (!/^\d{18}$/.test(nip)) {
         alert("NIP harus berupa 18 digit angka tanpa spasi.");
         return;
       }
 
+      // Tampilkan efek loading
+      loadingDiv.style.display = "block";
+      resultDiv.innerHTML = "";
+
       fetch(`https://script.google.com/macros/s/AKfycbxgpQBtMzVXoAoUM1nQj2ejGqo50sg6y4woPgfv_yrhM0DDNQGNl3Fl4XbU6H9c14mUvA/exec?nip=${nip}`) // Ganti dengan URL Web App Anda
         .then(response => response.json())
         .then(data => {
-          const resultDiv = document.getElementById("result");
+          loadingDiv.style.display = "none"; // Sembunyikan loading
           if (data.error) {
             resultDiv.innerHTML = `<p style="color: red;">${data.error}</p>`;
           } else {
@@ -168,8 +203,15 @@
           }
         })
         .catch(error => {
-          document.getElementById("result").innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+          loadingDiv.style.display = "none"; // Sembunyikan loading
+          resultDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
         });
+    };
+
+    document.getElementById("resetButton").onclick = function() {
+      document.getElementById("nip").value = ""; // Kosongkan input NIP
+      document.getElementById("result").innerHTML = ""; // Kosongkan hasil
+      document.getElementById("loading").style.display = "none"; // Sembunyikan loading
     };
   </script>
 </body>
