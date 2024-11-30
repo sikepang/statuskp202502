@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Status Usulan</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 20px;
+    }
+    .result {
+      margin-top: 20px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <h2>Periksa Status Usulan</h2>
+  <form id="nipForm">
+    <label for="nip">Masukkan NIP:</label><br>
+    <input type="text" id="nip" maxlength="18" pattern="\\d{18}" required>
+    <button type="submit">Cari</button>
+  </form>
+  <div class="result" id="result"></div>
+  <script>
+    document.getElementById("nipForm").onsubmit = function(e) {
+      e.preventDefault();
+      const nip = document.getElementById("nip").value;
+      fetch(`https://docs.google.com/spreadsheets/d/13Bqt3DcXvj1OZXvhQBKLol8byt8hdeMaTPGuGMBldt8/edit?nip=${nip}`)
+        .then(response => response.json())
+        .then(data => {
+          const resultDiv = document.getElementById("result");
+          if (data.error) {
+            resultDiv.innerHTML = `<p style="color: red;">${data.error}</p>`;
+          } else {
+            resultDiv.innerHTML = `
+              <p><strong>Unit Kerja:</strong> ${data.unitKerja}</p>
+              <p><strong>Sub Unit Kerja:</strong> ${data.subUnitKerja}</p>
+              <p><strong>Nama:</strong> ${data.nama}</p>
+              <p><strong>NIP:</strong> ${data.nip}</p>
+              <p><strong>Gol. YAD:</strong> ${data.golYAD}</p>
+              <p><strong>Status:</strong> ${data.status}</p>
+              <p><strong>Tindak Lanjut:</strong> ${data.tindakLanjut}</p>
+            `;
+          }
+        })
+        .catch(error => {
+          document.getElementById("result").innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+        });
+    };
+  </script>
+</body>
+</html>
