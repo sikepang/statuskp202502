@@ -20,15 +20,20 @@
   <h2>Periksa Status Usulan</h2>
   <form id="nipForm">
     <label for="nip">Masukkan NIP:</label><br>
-    <input type="text" id="nip" maxlength="18" pattern="\\d{18}" required>
+    <input type="text" id="nip" maxlength="18" pattern="\d{18}" required>
     <button type="submit">Cari</button>
   </form>
   <div class="result" id="result"></div>
   <script>
     document.getElementById("nipForm").onsubmit = function(e) {
       e.preventDefault();
-      const nip = document.getElementById("nip").value;
-      fetch(`https://docs.google.com/spreadsheets/d/13Bqt3DcXvj1OZXvhQBKLol8byt8hdeMaTPGuGMBldt8/edit?nip=${nip}`)
+      const nip = document.getElementById("nip").value.trim(); // Hapus spasi sebelum/sesudah
+      if (!/^\d{18}$/.test(nip)) {
+        alert("NIP harus berupa 18 digit angka tanpa spasi.");
+        return;
+      }
+
+      fetch(`https://script.google.com/macros/s/AKfycbxgpQBtMzVXoAoUM1nQj2ejGqo50sg6y4woPgfv_yrhM0DDNQGNl3Fl4XbU6H9c14mUvA/exec?nip=${nip}`) // Ganti dengan URL Web App Anda
         .then(response => response.json())
         .then(data => {
           const resultDiv = document.getElementById("result");
