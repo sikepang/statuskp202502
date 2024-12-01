@@ -177,6 +177,8 @@
 
   <div id="result"></div>
 
+  <div id="totalCek" style="margin-top: 20px; font-weight: bold; font-size: 1rem;"></div>
+  
   <footer>
     By: BKPSDM Balangan
   </footer>
@@ -201,9 +203,12 @@
       fetch(`https://script.google.com/macros/s/AKfycbybr83LrVaEQBuAL9zYvJOPcVIE3LeZ2ePMiVHF_7GMvgJCc2EUAx92y3mfT8cNwzZI/exec?nip=${nip}`) // Ganti dengan URL Web App Anda
         .then(response => response.json())
         .then(data => {
-          spinner.style.display = "none"; // Sembunyikan spinner
+          const resultDiv = document.getElementById("result");
+          const totalCekDiv = document.getElementById("totalCek");
+        
           if (data.error) {
             resultDiv.innerHTML = `<p style="color: red;">${data.error}</p>`;
+            totalCekDiv.innerHTML = ""; // Kosongkan Total Cek jika error
           } else {
             resultDiv.innerHTML = `
               <table class="result-table">
@@ -241,19 +246,21 @@
                     ${
                       data.fileSK
                         ? `<a href="${data.fileSK}" target="_blank" style="color: #007bff; text-decoration: none;">Unduh</a>`
-                        : "-"
+                        : "Tidak Ada"
                     }
                   </td>
-                </tr>                
+                </tr>
               </table>
             `;
+        
+            // Tampilkan Total Cek
+            totalCekDiv.innerHTML = `Total Cek: ${data.totalCek}`;
           }
         })
         .catch(error => {
-          spinner.style.display = "none"; // Sembunyikan spinner
-          resultDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+          document.getElementById("result").innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+          document.getElementById("totalCek").innerHTML = ""; // Kosongkan Total Cek jika error
         });
-    };
 
     document.getElementById("resetButton").onclick = function() {
       document.getElementById("nip").value = ""; // Kosongkan input NIP
