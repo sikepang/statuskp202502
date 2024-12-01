@@ -124,6 +124,18 @@
       }
     }
 
+    @keyframes float {
+      0% {
+        transform: translate(-50%, -50%) translateY(0);
+      }
+      50% {
+        transform: translate(-50%, -50%) translateY(-10px);
+      }
+      100% {
+        transform: translate(-50%, -50%) translateY(0);
+      }
+    }
+
     .result-table {
       margin: 20px auto;
       border-collapse: collapse;
@@ -160,7 +172,7 @@
   <h2>STATUS USUL KENAIKAN PANGKAT</h2>
   <h3>Periode 1 Februari 2025</h3>
   <form id="nipForm">
-    <input type="text" id="nip" placeholder="Masukkan NIP tanpa spasi!" maxlength="18" pattern="\d{18}" required>
+    <input type="text" id="nip" placeholder="Tulis NIP tanpa spasi!" maxlength="18" pattern="\d{18}" required>
     <button type="submit" class="search-button"><i class="fas fa-search"></i></button>
     <button type="button" class="reset-button" id="resetButton"><i class="fas fa-redo"></i></button>
   </form>
@@ -177,8 +189,6 @@
 
   <div id="result"></div>
 
-  <div id="totalCek" style="margin-top: 20px; font-weight: bold; font-size: 1rem;"></div>
-  
   <footer>
     By: BKPSDM Balangan
   </footer>
@@ -203,12 +213,9 @@
       fetch(`https://script.google.com/macros/s/AKfycbybr83LrVaEQBuAL9zYvJOPcVIE3LeZ2ePMiVHF_7GMvgJCc2EUAx92y3mfT8cNwzZI/exec?nip=${nip}`) // Ganti dengan URL Web App Anda
         .then(response => response.json())
         .then(data => {
-          const resultDiv = document.getElementById("result");
-          const totalCekDiv = document.getElementById("totalCek");
-        
+          spinner.style.display = "none"; // Sembunyikan spinner
           if (data.error) {
             resultDiv.innerHTML = `<p style="color: red;">${data.error}</p>`;
-            totalCekDiv.innerHTML = ""; // Kosongkan Total Cek jika error
           } else {
             resultDiv.innerHTML = `
               <table class="result-table">
@@ -246,21 +253,19 @@
                     ${
                       data.fileSK
                         ? `<a href="${data.fileSK}" target="_blank" style="color: #007bff; text-decoration: none;">Unduh</a>`
-                        : "Tidak Ada"
+                        : "-"
                     }
                   </td>
                 </tr>
               </table>
             `;
-        
-            // Tampilkan Total Cek
-            totalCekDiv.innerHTML = `Total Cek: ${data.totalCek}`;
           }
         })
         .catch(error => {
-          document.getElementById("result").innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
-          document.getElementById("totalCek").innerHTML = ""; // Kosongkan Total Cek jika error
+          spinner.style.display = "none"; // Sembunyikan spinner
+          resultDiv.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
         });
+    };
 
     document.getElementById("resetButton").onclick = function() {
       document.getElementById("nip").value = ""; // Kosongkan input NIP
